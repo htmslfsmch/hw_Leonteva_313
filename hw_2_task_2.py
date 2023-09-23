@@ -2,7 +2,7 @@ Python 3.11.5 (v3.11.5:cce6ba91b3, Aug 24 2023, 10:50:31) [Clang 13.0.0 (clang-1
 Type "help", "copyright", "credits" or "license()" for more information.
 >>> f = open("train.csv", "r")
 ... spisok = list(f.readlines())
-... f.close() 
+... f.close()
 ... 
 ... all = 0
 ... male = 0

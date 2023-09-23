@@ -1,4 +1,3 @@
-
 f = open("train.csv", "r")
 spisok = list(f.readlines())
 f.close()

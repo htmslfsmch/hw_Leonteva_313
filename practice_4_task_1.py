@@ -10,7 +10,6 @@ def is_taxi(text):
 def is_private(text):
     return re.fullmatch("[АВЕКМНОРСТУХ][0-9]{3}[АВЕКМНОРСТУХ]{2}[0-9]{2,3}", text)
 
-
 result = ""
 
 for car_plate_number in car_plate_numbers.split():

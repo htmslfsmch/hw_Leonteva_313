@@ -1,30 +1,41 @@
-import math
-data = list(map(int, input("0-5 ").split()))
-length_of_vector_0 = math.sqrt((data[0]**2 + data[1]**2 + data[2]**2 + data[3]**2))
-results = open("results.txt", "w", encoding = "utf-8")
-#print(data)
-recommendations = {"Green Book": 0, "Interstellar": 0, "Fight Club": 0, "Shrek":0}
-with open("Оценки фильмов.txt", "r", encoding = "utf-8") as file:
-    string = file.readlines()
-    for i in string:
-        vector = list(map(int, i.split(",")[1:]))
-        print(vector)
-        splitted_string = i.split(",")
-        length_of_vector_1 = math.sqrt((vector[0]**2 + vector[1]**2 + vector[2]**2 + vector[3]**2))
-        scal = data[0]*vector[0] + data[1]*vector[1] + data[2]*vector[2] + data[3]*vector[3]
 
-        cos = scal / (length_of_vector_0 * length_of_vector_1)
-        #print('""', scal, length_of_vector_0 * length_of_vector_1, cos)
-        recommendations["Green Book"] += int(splitted_string[1]) * cos
-        recommendations["Interstellar"] += int(splitted_string[2]) * cos
-        recommendations["Fight Club"] += int(splitted_string[3]) * cos
-        recommendations["Shrek"] += int(splitted_string[4]) * cos
-        results.write("{}, {}, {}, {}, {}\n".format(splitted_string[0], int(splitted_string[1]) * cos,
-                                                    int(splitted_string[2]) * cos, int(splitted_string[3]) * cos, int(splitted_string[4]) * cos))
-    results.write("Reccomendations, Green Book {}, Interstellar {}, Fight Club {}, Shrek {}".format(recommendations["Green Book"],
-                                        recommendations["Interstellar"], recommendations["Fight Club"], recommendations["Shrek"]))
-    sorted_recommendations = {k: v for k, v in sorted(recommendations.items(), key=lambda item: item[1])}
-    
-    print(f"I would recommend you: {sorted_recommendations}")
+films = ['Зеленная книга', 'Интерстеллар', 'Бойцовский клуб', 'Шрек']
+mentions = dict()
+with open('Оценки фильмов.txt', encoding='utf-8') as file:
+    for line in file.readlines():
+        line_list = line.replace('\n', '').split(', ')
+        mentions[line_list[0]] = list(map(int, line_list[1:]))
 
-results.close()
+put_rating = list(map(int, input('Введите свои оценки (Зеленная книга, Интерстеллар, Бойцовский клуб, Шрек): ').split(', ')))
+
+result = []
+for name, ratings in mentions.items():
+
+    scalar = sum([my_rating*user_rating for my_rating, user_rating in zip(put_rating, ratings)])
+    len_put_rating = sum([my_rating**2 for my_rating in put_rating])
+    len_rating = sum([user_rating**2 for user_rating in ratings])
+
+    result.append((name, scalar / len_put_rating**0.5 / len_rating**0.5))
+
+best_matches = sorted(result, key=lambda x: x[1], reverse=True)[:5]
+best_matches = dict([x for x in best_matches if x[1] > 0])
+
+print('\nТоп-5 похожих пользователей по оценкам:')
+for name, matches  in best_matches.items():
+    print(f'{name}: {matches}')
+
+print('\nРекомендованные фильмы на основании ваших оценок:')
+
+recomended_films = dict()
+for name in best_matches:
+    for i, my_u_rating in enumerate(zip(put_rating, mentions[name])):
+        my_rating, user_rating = my_u_rating
+        if my_rating == 0:
+            if films[i] not in recomended_films:
+                recomended_films[films[i]] = 0
+            recomended_films[films[i]] += user_rating * best_matches[name]
+
+best_recomendation = sorted(recomended_films.items(), key=lambda x: x[1], reverse=True)[:5]
+
+for film, rate in best_recomendation:
+    print(f'{film}: коэффициент {rate}')
